@@ -235,6 +235,17 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
       return;
     }
 
+    // silent 모드 체크: 벨소리 모드가 NORMAL이 아니면 재생하지 않음.
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+      Log.i("RNSoundModule", "Device is in silent mode. Not playing sound.");
+      setOnPlay(false, key);
+      if (callback != null) {
+        callback.invoke(false);
+      }
+      return;
+    }
+
     // Request audio focus in Android system
     if (!this.mixWithOthers) {
       AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
